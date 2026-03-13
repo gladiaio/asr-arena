@@ -1,15 +1,10 @@
 import { Mistral } from "@mistralai/mistralai";
 import type { TranscribeResult, WordTimestamp } from "../transcribe";
 
-interface MistralWord {
-  word: string;
-  start: number;
-  end: number;
-}
-
 interface MistralSegment {
   text: string;
-  words?: MistralWord[];
+  start: number;
+  end: number;
 }
 
 export async function transcribeWithMistral(
@@ -38,9 +33,7 @@ export async function transcribeWithMistral(
   const segments = (response as unknown as { segments?: MistralSegment[] }).segments;
   if (segments) {
     for (const seg of segments) {
-      for (const w of seg.words || []) {
-        words.push({ word: w.word, start: w.start, end: w.end });
-      }
+      words.push({ word: seg.text.trim(), start: seg.start, end: seg.end });
     }
   }
 

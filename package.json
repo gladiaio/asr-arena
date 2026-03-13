@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "test:providers": "tsx test-providers.ts"
   },
   "dependencies": {
     "@deepgram/sdk": "^5.0.0",
