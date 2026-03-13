@@ -6,25 +6,30 @@ import { AudioUploader } from "@/components/audio-uploader";
 import { TranscriptCard, TranscriptCardSkeleton } from "@/components/transcript-card";
 import { VoteButtons } from "@/components/vote-buttons";
 import { SessionSummary } from "@/components/session-summary";
-import { PROVIDERS } from "@/lib/providers";
 import { computeWordDiff } from "@/lib/diff";
 
-type Phase = "input" | "transcribing" | "compare" | "reveal";
+type Phase = "input" | "transcribing" | "compare" | "voting" | "reveal";
 
-interface ProviderResult {
+interface ProviderReveal {
   id: string;
   slug: string;
   name: string;
   logoUrl: string;
+  color?: string;
 }
 
 interface TranscriptionResult {
-  providerA: ProviderResult;
-  providerB: ProviderResult;
+  matchToken: string;
   transcriptA: string;
   transcriptB: string;
   errorA?: string | null;
   errorB?: string | null;
+}
+
+interface RevealData {
+  providerA: ProviderReveal;
+  providerB: ProviderReveal;
+  winnerId: string | null;
 }
 
 interface SessionStats {
@@ -36,7 +41,7 @@ export default function ArenaPage() {
   const [sessionId, setSessionId] = useState<string>("");
   const [phase, setPhase] = useState<Phase>("input");
   const [result, setResult] = useState<TranscriptionResult | null>(null);
-  const [winnerId, setWinnerId] = useState<string | null>(null);
+  const [reveal, setReveal] = useState<RevealData | null>(null);
   const [voteCount, setVoteCount] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
@@ -56,6 +61,7 @@ export default function ArenaPage() {
     async (blob: Blob) => {
       setPhase("transcribing");
       setResult(null);
+      setReveal(null);
 
       try {
         const formData = new FormData();
@@ -84,36 +90,36 @@ export default function ArenaPage() {
     async (choice: "a" | "tie" | "b") => {
       if (!result) return;
 
-      let selectedWinnerId: string | null = null;
-      if (choice === "a") selectedWinnerId = result.providerA.id;
-      else if (choice === "b") selectedWinnerId = result.providerB.id;
-
-      setWinnerId(selectedWinnerId);
-      setPhase("reveal");
+      setPhase("voting");
       setVoteCount((c) => c + 1);
 
       try {
-        await fetch("/api/vote", {
+        const res = await fetch("/api/vote", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            sessionId,
-            providerAId: result.providerA.id,
-            providerBId: result.providerB.id,
-            winnerId: selectedWinnerId,
+            matchToken: result.matchToken,
+            choice,
           }),
         });
+
+        if (!res.ok) throw new Error("Vote failed");
+
+        const data: RevealData = await res.json();
+        setReveal(data);
+        setPhase("reveal");
       } catch (err) {
         console.error("Vote failed:", err);
+        setPhase("compare");
       }
     },
-    [result, sessionId]
+    [result]
   );
 
   const handlePlayAgain = useCallback(() => {
     setPhase("input");
     setResult(null);
-    setWinnerId(null);
+    setReveal(null);
   }, []);
 
   const handleEndSession = useCallback(async () => {
@@ -135,11 +141,8 @@ export default function ArenaPage() {
     setVoteCount(0);
     setPhase("input");
     setResult(null);
-    setWinnerId(null);
+    setReveal(null);
   }, []);
-
-  const providerADef = result ? PROVIDERS.find((p) => p.slug === result.providerA.slug) : null;
-  const providerBDef = result ? PROVIDERS.find((p) => p.slug === result.providerB.slug) : null;
 
   const diff = result && !result.errorA && !result.errorB
     ? computeWordDiff(result.transcriptA, result.transcriptB)
@@ -228,7 +231,7 @@ export default function ArenaPage() {
       )}
 
       {/* Compare & Vote */}
-      {phase === "compare" && result && (
+      {(phase === "compare" || phase === "voting") && result && (
         <div className="flex flex-1 flex-col items-center justify-center gap-8 w-full animate-fade-in">
           <div className="flex flex-col items-center gap-2 text-center">
             <h2
@@ -295,6 +298,7 @@ export default function ArenaPage() {
           ) : (
             <VoteButtons
               onVote={handleVote}
+              disabled={phase === "voting"}
               transcriptA={result.transcriptA}
               transcriptB={result.transcriptB}
               disableA={!!result.errorA}
@@ -305,14 +309,14 @@ export default function ArenaPage() {
       )}
 
       {/* Reveal */}
-      {phase === "reveal" && result && (
+      {phase === "reveal" && result && reveal && (
         <div className="flex flex-1 flex-col items-center justify-center gap-8 w-full animate-fade-in">
           <div className="flex flex-col items-center gap-2 text-center">
             <h2
               className="text-2xl font-semibold tracking-tight"
               style={{ color: "var(--color-text-primary)" }}
             >
-              {winnerId === null ? "It's a tie!" : "And the winner is..."}
+              {reveal.winnerId === null ? "It's a tie!" : "And the winner is..."}
             </h2>
           </div>
 
@@ -321,21 +325,21 @@ export default function ArenaPage() {
               label="Model A"
               transcript={result.transcriptA}
               error={result.errorA}
-              providerName={result.providerA.name}
-              providerLogo={result.providerA.logoUrl}
-              providerColor={providerADef?.color}
+              providerName={reveal.providerA.name}
+              providerLogo={reveal.providerA.logoUrl}
+              providerColor={reveal.providerA.color}
               revealed={true}
-              isWinner={winnerId === result.providerA.id}
+              isWinner={reveal.winnerId === reveal.providerA.id}
             />
             <TranscriptCard
               label="Model B"
               transcript={result.transcriptB}
               error={result.errorB}
-              providerName={result.providerB.name}
-              providerLogo={result.providerB.logoUrl}
-              providerColor={providerBDef?.color}
+              providerName={reveal.providerB.name}
+              providerLogo={reveal.providerB.logoUrl}
+              providerColor={reveal.providerB.color}
               revealed={true}
-              isWinner={winnerId === result.providerB.id}
+              isWinner={reveal.winnerId === reveal.providerB.id}
             />
           </div>
 

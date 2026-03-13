@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { transcribeForProvider } from "@/lib/transcribe";
+import { signMatchToken } from "@/lib/match-token";
 
 export const maxDuration = 120;
 
@@ -42,19 +43,10 @@ export async function POST(request: Request) {
       transcribeForProvider(providerB.slug, audioBuffer, mimeType),
     ]);
 
+    const matchToken = signMatchToken(sessionId, providerA.id, providerB.id);
+
     return NextResponse.json({
-      providerA: {
-        id: providerA.id,
-        slug: providerA.slug,
-        name: providerA.name,
-        logoUrl: providerA.logoUrl,
-      },
-      providerB: {
-        id: providerB.id,
-        slug: providerB.slug,
-        name: providerB.name,
-        logoUrl: providerB.logoUrl,
-      },
+      matchToken,
       transcriptA: resultA.transcript,
       transcriptB: resultB.transcript,
       errorA: resultA.error || null,
