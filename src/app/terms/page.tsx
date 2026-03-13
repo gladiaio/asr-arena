@@ -45,11 +45,16 @@ export default function TermsPage() {
           <p>
             When you submit audio, it is sent in real time to two randomly
             selected third-party speech-to-text providers for transcription.{" "}
-            <strong>Gladia does not store your audio files.</strong> However,
-            once your audio is transmitted to a provider, it is processed under
-            that provider&apos;s own terms and privacy policy. Gladia has no
-            control over how third-party providers handle, store, or process your
-            audio data. Please review their terms:
+            <strong>
+              Gladia does not store your audio files or the resulting
+              transcriptions.
+            </strong>{" "}
+            The only data we retain is the outcome of each comparison (which
+            provider was selected as the winner, or whether it was a tie).
+            However, once your audio is transmitted to a provider, it is
+            processed under that provider&apos;s own terms and privacy policy.
+            Gladia has no control over how third-party providers handle, store,
+            or process your audio data. Please review their terms:
           </p>
           <ul className="mt-3 flex flex-col gap-1.5 pl-4" style={{ listStyleType: "disc" }}>
             <ProviderLink name="Gladia" href="https://www.gladia.io/legal/terms-of-use" />
