@@ -6,9 +6,16 @@ import { transcribeWithElevenLabs } from "./providers/elevenlabs";
 import { transcribeWithSpeechmatics } from "./providers/speechmatics";
 import { transcribeWithMistral } from "./providers/mistral";
 
+export interface WordTimestamp {
+  word: string;
+  start: number;
+  end: number;
+}
+
 export interface TranscribeResult {
   transcript: string;
   durationMs: number;
+  words?: WordTimestamp[];
   error?: string;
 }
 

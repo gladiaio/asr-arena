@@ -1,5 +1,12 @@
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+interface ElevenLabsWord {
+  text: string;
+  start: number;
+  end: number;
+  type: string;
+}
 
 export async function transcribeWithElevenLabs(
   audio: Buffer,
@@ -23,13 +30,23 @@ export async function transcribeWithElevenLabs(
   const response = await client.speechToText.convert({
     file,
     modelId: "scribe_v2",
+    timestampsGranularity: "word",
   });
 
   const durationMs = Date.now() - start;
-  const body = response as unknown as { text?: string };
+  const body = response as unknown as { text?: string; words?: ElevenLabsWord[] };
+
+  const words: WordTimestamp[] = (body.words || [])
+    .filter((w) => w.type === "word")
+    .map((w) => ({
+      word: w.text,
+      start: w.start,
+      end: w.end,
+    }));
 
   return {
     transcript: body.text ?? "",
+    words,
     durationMs,
   };
 }

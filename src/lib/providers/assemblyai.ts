@@ -1,5 +1,5 @@
 import { AssemblyAI } from "assemblyai";
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
 
 export async function transcribeWithAssemblyAI(
   audio: Buffer,
@@ -23,10 +23,17 @@ export async function transcribeWithAssemblyAI(
     throw new Error(`AssemblyAI error: ${transcript.error}`);
   }
 
+  const words: WordTimestamp[] = (transcript.words || []).map((w) => ({
+    word: w.text,
+    start: w.start / 1000,
+    end: w.end / 1000,
+  }));
+
   const durationMs = Date.now() - start;
 
   return {
     transcript: transcript.text ?? "",
+    words,
     durationMs,
   };
 }

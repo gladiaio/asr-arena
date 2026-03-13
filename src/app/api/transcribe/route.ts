@@ -49,6 +49,8 @@ export async function POST(request: Request) {
       matchToken,
       transcriptA: resultA.transcript,
       transcriptB: resultB.transcript,
+      wordsA: resultA.words || [],
+      wordsB: resultB.words || [],
       errorA: resultA.error || null,
       errorB: resultB.error || null,
     });

@@ -1,6 +1,17 @@
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
 
 const GLADIA_BASE = "https://api.gladia.io/v2";
+
+interface GladiaWord {
+  word: string;
+  time_begin: number;
+  time_end: number;
+}
+
+interface GladiaUtterance {
+  text: string;
+  words: GladiaWord[];
+}
 
 export async function transcribeWithGladia(
   audio: Buffer,
@@ -46,13 +57,16 @@ export async function transcribeWithGladia(
 
   const { result_url } = await transcribeRes.json();
 
-  const transcript = await pollForResult(result_url, apiKey);
+  const { transcript, words } = await pollForResult(result_url, apiKey);
   const durationMs = Date.now() - start;
 
-  return { transcript, durationMs };
+  return { transcript, words, durationMs };
 }
 
-async function pollForResult(resultUrl: string, apiKey: string): Promise<string> {
+async function pollForResult(
+  resultUrl: string,
+  apiKey: string
+): Promise<{ transcript: string; words: WordTimestamp[] }> {
   const maxAttempts = 60;
   const interval = 1000;
 
@@ -68,13 +82,23 @@ async function pollForResult(resultUrl: string, apiKey: string): Promise<string>
     const data = await res.json();
 
     if (data.status === "done") {
-      const utterances = data.result?.transcription?.utterances;
+      const utterances: GladiaUtterance[] | undefined =
+        data.result?.transcription?.utterances;
+
       if (utterances && Array.isArray(utterances)) {
-        return utterances.map((u: { text: string }) => u.text).join(" ");
+        const transcript = utterances.map((u) => u.text).join(" ");
+        const words: WordTimestamp[] = utterances.flatMap((u) =>
+          (u.words || []).map((w) => ({
+            word: w.word,
+            start: w.time_begin,
+            end: w.time_end,
+          }))
+        );
+        return { transcript, words };
       }
+
       const fullTranscript = data.result?.transcription?.full_transcript;
-      if (fullTranscript) return fullTranscript;
-      return "";
+      return { transcript: fullTranscript || "", words: [] };
     }
 
     if (data.status === "error") {

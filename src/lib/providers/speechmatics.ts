@@ -1,5 +1,12 @@
 import { BatchClient } from "@speechmatics/batch-client";
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+interface SmResult {
+  type?: string;
+  start_time?: number;
+  end_time?: number;
+  alternatives?: { content: string }[];
+}
 
 export async function transcribeWithSpeechmatics(
   audio: Buffer,
@@ -32,19 +39,31 @@ export async function transcribeWithSpeechmatics(
   );
 
   let transcript = "";
+  const words: WordTimestamp[] = [];
+
   if (typeof response === "string") {
     transcript = response;
   } else if (response.results) {
-    transcript = response.results
-      .map((r: { alternatives?: { content: string }[] }) =>
-        r.alternatives?.[0]?.content ?? ""
-      )
+    const results = response.results as SmResult[];
+
+    transcript = results
+      .map((r) => r.alternatives?.[0]?.content ?? "")
       .join(" ")
       .replace(/\s+/g, " ")
       .trim();
+
+    for (const r of results) {
+      if (r.type === "word" && r.start_time != null && r.end_time != null) {
+        words.push({
+          word: r.alternatives?.[0]?.content ?? "",
+          start: r.start_time,
+          end: r.end_time,
+        });
+      }
+    }
   }
 
   const durationMs = Date.now() - start;
 
-  return { transcript, durationMs };
+  return { transcript, words, durationMs };
 }

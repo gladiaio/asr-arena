@@ -1,5 +1,16 @@
 import { Mistral } from "@mistralai/mistralai";
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+interface MistralWord {
+  word: string;
+  start: number;
+  end: number;
+}
+
+interface MistralSegment {
+  text: string;
+  words?: MistralWord[];
+}
 
 export async function transcribeWithMistral(
   audio: Buffer,
@@ -18,12 +29,24 @@ export async function transcribeWithMistral(
   const response = await client.audio.transcriptions.complete({
     model: "voxtral-mini-latest",
     file,
+    timestampGranularities: ["word"],
   });
 
   const durationMs = Date.now() - start;
 
+  const words: WordTimestamp[] = [];
+  const segments = (response as unknown as { segments?: MistralSegment[] }).segments;
+  if (segments) {
+    for (const seg of segments) {
+      for (const w of seg.words || []) {
+        words.push({ word: w.word, start: w.start, end: w.end });
+      }
+    }
+  }
+
   return {
     transcript: response.text ?? "",
+    words,
     durationMs,
   };
 }

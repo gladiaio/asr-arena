@@ -1,12 +1,19 @@
 import { DeepgramClient } from "@deepgram/sdk";
 import { Readable } from "stream";
-import type { TranscribeResult } from "../transcribe";
+import type { TranscribeResult, WordTimestamp } from "../transcribe";
+
+interface DeepgramWord {
+  word: string;
+  start: number;
+  end: number;
+}
 
 interface DeepgramTranscriptResponse {
   results?: {
     channels?: {
       alternatives?: {
         transcript?: string;
+        words?: DeepgramWord[];
       }[];
     }[];
   };
@@ -32,10 +39,16 @@ export async function transcribeWithDeepgram(
   });
 
   const data = response as unknown as DeepgramTranscriptResponse;
-  const transcript =
-    data?.results?.channels?.[0]?.alternatives?.[0]?.transcript ?? "";
+  const alt = data?.results?.channels?.[0]?.alternatives?.[0];
+  const transcript = alt?.transcript ?? "";
+
+  const words: WordTimestamp[] = (alt?.words || []).map((w) => ({
+    word: w.word,
+    start: w.start,
+    end: w.end,
+  }));
 
   const durationMs = Date.now() - start;
 
-  return { transcript, durationMs };
+  return { transcript, words, durationMs };
 }

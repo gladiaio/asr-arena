@@ -3,7 +3,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AudioRecorder } from "@/components/audio-recorder";
 import { AudioUploader } from "@/components/audio-uploader";
+import { AudioPlayer } from "@/components/audio-player";
 import { TranscriptCard, TranscriptCardSkeleton } from "@/components/transcript-card";
+import type { WordTimestamp } from "@/components/transcript-card";
 import { VoteButtons } from "@/components/vote-buttons";
 import { SessionSummary } from "@/components/session-summary";
 import { computeWordDiff } from "@/lib/diff";
@@ -23,6 +25,8 @@ interface TranscriptionResult {
   matchToken: string;
   transcriptA: string;
   transcriptB: string;
+  wordsA?: WordTimestamp[];
+  wordsB?: WordTimestamp[];
   errorA?: string | null;
   errorB?: string | null;
 }
@@ -46,6 +50,8 @@ export default function ArenaPage() {
   const [voteCount, setVoteCount] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioTime, setAudioTime] = useState(0);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? localStorage.getItem("stt-arena-session") : null;
@@ -58,14 +64,21 @@ export default function ArenaPage() {
     }
   }, []);
 
+  const audioUrlRef = useRef<string | null>(null);
+
   const handleAudioSubmit = useCallback(
     async (blob: Blob) => {
       setPhase("transcribing");
       setResult(null);
       setReveal(null);
+      setAudioTime(0);
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
 
       try {
         const wav = await blobToWav(blob);
+        const url = URL.createObjectURL(wav);
+        audioUrlRef.current = url;
+        setAudioUrl(url);
 
         const formData = new FormData();
         formData.append("audio", wav, "audio.wav");
@@ -123,6 +136,10 @@ export default function ArenaPage() {
     setPhase("input");
     setResult(null);
     setReveal(null);
+    if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    audioUrlRef.current = null;
+    setAudioUrl(null);
+    setAudioTime(0);
   }, []);
 
   const handleEndSession = useCallback(async () => {
@@ -145,6 +162,10 @@ export default function ArenaPage() {
     setPhase("input");
     setResult(null);
     setReveal(null);
+    if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    audioUrlRef.current = null;
+    setAudioUrl(null);
+    setAudioTime(0);
   }, []);
 
   const diff = result && !result.errorA && !result.errorB
@@ -248,10 +269,18 @@ export default function ArenaPage() {
             </p>
           </div>
 
+          {audioUrl && (
+            <div className="w-full max-w-lg">
+              <AudioPlayer src={audioUrl} onTimeUpdate={setAudioTime} />
+            </div>
+          )}
+
           <div className="relative grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             <TranscriptCard
               label="Model A"
               transcript={result.transcriptA}
+              words={result.wordsA}
+              currentTime={audioTime}
               diffSegments={diff?.segmentsA}
               error={result.errorA}
               revealed={false}
@@ -275,6 +304,8 @@ export default function ArenaPage() {
             <TranscriptCard
               label="Model B"
               transcript={result.transcriptB}
+              words={result.wordsB}
+              currentTime={audioTime}
               diffSegments={diff?.segmentsB}
               error={result.errorB}
               revealed={false}
@@ -323,10 +354,18 @@ export default function ArenaPage() {
             </h2>
           </div>
 
+          {audioUrl && (
+            <div className="w-full max-w-lg">
+              <AudioPlayer src={audioUrl} onTimeUpdate={setAudioTime} />
+            </div>
+          )}
+
           <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             <TranscriptCard
               label="Model A"
               transcript={result.transcriptA}
+              words={result.wordsA}
+              currentTime={audioTime}
               error={result.errorA}
               providerName={reveal.providerA.name}
               providerLogo={reveal.providerA.logoUrl}
@@ -337,6 +376,8 @@ export default function ArenaPage() {
             <TranscriptCard
               label="Model B"
               transcript={result.transcriptB}
+              words={result.wordsB}
+              currentTime={audioTime}
               error={result.errorB}
               providerName={reveal.providerB.name}
               providerLogo={reveal.providerB.logoUrl}

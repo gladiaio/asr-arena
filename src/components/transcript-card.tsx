@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import type { DiffSegment } from "@/lib/diff";
+
+export interface WordTimestamp {
+  word: string;
+  start: number;
+  end: number;
+}
 
 interface TranscriptCardProps {
   label: string;
   transcript: string;
+  words?: WordTimestamp[];
+  currentTime?: number;
   diffSegments?: DiffSegment[];
   error?: string | null;
   providerName?: string;
@@ -21,6 +29,8 @@ interface TranscriptCardProps {
 export function TranscriptCard({
   label,
   transcript,
+  words,
+  currentTime,
   diffSegments,
   error,
   providerName,
@@ -50,6 +60,8 @@ export function TranscriptCard({
     : selected
     ? "0 0 24px rgba(148, 122, 252, 0.15)"
     : "none";
+
+  const hasWordSync = words && words.length > 0 && currentTime != null;
 
   if (hasError) {
     return (
@@ -113,7 +125,6 @@ export function TranscriptCard({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Blurred transcript ghost (hints at hover) */}
         <div
           className="absolute inset-0 p-6 select-none transition-opacity duration-300"
           aria-hidden="true"
@@ -130,7 +141,6 @@ export function TranscriptCard({
           </div>
         </div>
 
-        {/* Logo view (default after reveal) */}
         <div
           className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 transition-opacity duration-300"
           style={{ opacity: hovered ? 0 : 1 }}
@@ -164,7 +174,6 @@ export function TranscriptCard({
           )}
         </div>
 
-        {/* Transcript overlay (visible on hover) */}
         <div
           className="absolute inset-0 flex flex-col p-6 transition-opacity duration-300 overflow-y-auto"
           style={{
@@ -193,7 +202,11 @@ export function TranscriptCard({
             className="flex-1 text-sm leading-relaxed"
             style={{ color: "var(--color-text-primary)" }}
           >
-            {transcript}
+            {hasWordSync ? (
+              <SyncedWords words={words} currentTime={currentTime} />
+            ) : (
+              transcript
+            )}
           </div>
         </div>
       </div>
@@ -250,9 +263,55 @@ export function TranscriptCard({
         className="flex-1 text-base leading-relaxed"
         style={{ color: "var(--color-text-primary)" }}
       >
-        {diffSegments ? <HighlightedText segments={diffSegments} /> : transcript}
+        {hasWordSync ? (
+          <SyncedWords words={words} currentTime={currentTime} />
+        ) : diffSegments ? (
+          <HighlightedText segments={diffSegments} />
+        ) : (
+          transcript
+        )}
       </div>
     </div>
+  );
+}
+
+function SyncedWords({
+  words,
+  currentTime,
+}: {
+  words: WordTimestamp[];
+  currentTime: number;
+}) {
+  const activeIndex = useMemo(() => {
+    for (let i = words.length - 1; i >= 0; i--) {
+      if (currentTime >= words[i].start) return i;
+    }
+    return -1;
+  }, [words, currentTime]);
+
+  return (
+    <>
+      {words.map((w, i) => {
+        const isActive = i === activeIndex;
+        const isPast = i < activeIndex;
+        return (
+          <span
+            key={i}
+            className="transition-colors duration-100"
+            style={{
+              color: isActive
+                ? "var(--color-accent-purple)"
+                : isPast
+                ? "var(--color-text-primary)"
+                : "var(--color-text-tertiary)",
+              fontWeight: isActive ? 600 : 400,
+            }}
+          >
+            {w.word}{" "}
+          </span>
+        );
+      })}
+    </>
   );
 }
 
