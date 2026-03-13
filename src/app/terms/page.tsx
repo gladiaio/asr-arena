@@ -46,15 +46,15 @@ export default function TermsPage() {
             When you submit audio, it is sent in real time to two randomly
             selected third-party speech-to-text providers for transcription.{" "}
             <strong>
-              Gladia does not store your audio files or the resulting
+              STT Arena does not store your audio files or the resulting
               transcriptions.
             </strong>{" "}
             The only data we retain is the outcome of each comparison (which
             provider was selected as the winner, or whether it was a tie).
             However, once your audio is transmitted to a provider, it is
             processed under that provider&apos;s own terms and privacy policy.
-            Gladia has no control over how third-party providers handle, store,
-            or process your audio data. Please review their terms:
+            STT Arena has no control over how third-party providers handle,
+            store, or process your audio data. Please review their terms:
           </p>
           <ul className="mt-3 flex flex-col gap-1.5 pl-4" style={{ listStyleType: "disc" }}>
             <ProviderLink name="Gladia" href="https://www.gladia.io/legal/terms-of-use" />
@@ -78,7 +78,7 @@ export default function TermsPage() {
             Votes are anonymous — we do not require an account or collect any
             personal identifiers. A random session ID is stored in your
             browser&apos;s local storage to group votes within a session. By
-            voting, you agree that your votes become the property of Gladia and
+            voting, you agree that your votes become the property of STT Arena and
             may be used to compute and publish leaderboard rankings.
           </p>
         </Section>
@@ -97,8 +97,8 @@ export default function TermsPage() {
             Provider names and logos displayed on this site (Deepgram, AssemblyAI,
             ElevenLabs, Speechmatics) are trademarks of their respective owners.
             Their use here is strictly for identification purposes in the context
-            of a comparative, non-commercial benchmark. Gladia is not affiliated
-            with, endorsed by, or sponsored by any of these companies.
+            of a comparative, non-commercial benchmark. STT Arena is not
+            affiliated with, endorsed by, or sponsored by any of these companies.
           </p>
         </Section>
 
@@ -111,7 +111,7 @@ export default function TermsPage() {
             non-infringement.
           </p>
           <p className="mt-3">
-            Gladia shall not be held liable for any direct, indirect, incidental,
+            STT Arena and its sponsors shall not be held liable for any direct, indirect, incidental,
             special, consequential, or exemplary damages arising from or related
             to the use of this service, including but not limited to: the
             processing of audio by third-party providers, the accuracy or
