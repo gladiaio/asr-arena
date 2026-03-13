@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Provider {
+  id       String @id @default(cuid())
+  name     String @unique
+  slug     String @unique
+  logoUrl  String @map("logo_url")
+
+  votesAsA Vote[] @relation("providerA")
+  votesAsB Vote[] @relation("providerB")
+  wins     Vote[] @relation("winner")
+
+  @@map("providers")
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now()) @map("created_at")
+  endedAt   DateTime? @map("ended_at")
+
+  votes Vote[]
+
+  @@map("sessions")
+}
+
+model Vote {
+  id          String   @id @default(cuid())
+  sessionId   String   @map("session_id")
+  providerAId String   @map("provider_a_id")
+  providerBId String   @map("provider_b_id")
+  winnerId    String?  @map("winner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  session   Session  @relation(fields: [sessionId], references: [id])
+  providerA Provider @relation("providerA", fields: [providerAId], references: [id])
+  providerB Provider @relation("providerB", fields: [providerBId], references: [id])
+  winner    Provider? @relation("winner", fields: [winnerId], references: [id])
+
+  @@map("votes")
+}
