@@ -4,8 +4,8 @@ const GLADIA_BASE = "https://api.gladia.io/v2";
 
 interface GladiaWord {
   word: string;
-  time_begin: number;
-  time_end: number;
+  start: number;
+  end: number;
 }
 
 interface GladiaUtterance {
@@ -90,8 +90,8 @@ async function pollForResult(
         const words: WordTimestamp[] = utterances.flatMap((u) =>
           (u.words || []).map((w) => ({
             word: w.word,
-            start: w.time_begin,
-            end: w.time_end,
+            start: w.start,
+            end: w.end,
           }))
         );
         return { transcript, words };
