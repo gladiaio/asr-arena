@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { transcribeWithGladia } from "./providers/gladia";
 import { transcribeWithDeepgram } from "./providers/deepgram";
 import { transcribeWithAssemblyAI } from "./providers/assemblyai";
@@ -36,6 +37,13 @@ export async function transcribeForProvider(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`[${providerSlug}] transcription failed:`, err);
+
+    Sentry.captureException(err, {
+      tags: { provider: providerSlug },
+      level: "error",
+      extra: { mimeType },
+    });
+
     return { transcript: "", durationMs: 0, error: message };
   }
 }
