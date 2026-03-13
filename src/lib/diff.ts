@@ -27,7 +27,7 @@ function tokenize(text: string): string[] {
 }
 
 function normalizeWord(w: string): string {
-  return w.toLowerCase();
+  return w;
 }
 
 interface LCSEntry {

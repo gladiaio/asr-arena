@@ -173,7 +173,7 @@ export default function ArenaPage() {
     : null;
 
   const transcriptsIdentical = result && !result.errorA && !result.errorB
-    && result.transcriptA.toLowerCase() === result.transcriptB.toLowerCase();
+    && result.transcriptA === result.transcriptB;
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-88px)] max-w-5xl flex-col items-center px-6 py-12">

@@ -42,9 +42,10 @@ test("completely different strings produce all 'diff'", () => {
   assert(segmentsB.every((s) => s.type === "diff"), `B: ${JSON.stringify(segmentsB)}`);
 });
 
-test("case differences are ignored", () => {
-  const { segmentsA } = computeWordDiff("Hello World", "hello world");
-  assert(segmentsA.every((s) => s.type === "same"), `A: ${JSON.stringify(segmentsA)}`);
+test("case differences are detected", () => {
+  const { segmentsA, segmentsB } = computeWordDiff("Hello World", "hello world");
+  assert(segmentsA.every((s) => s.type === "diff"), `A should be diff: ${JSON.stringify(segmentsA)}`);
+  assert(segmentsB.every((s) => s.type === "diff"), `B should be diff: ${JSON.stringify(segmentsB)}`);
 });
 
 test("punctuation differences are detected", () => {
@@ -103,6 +104,18 @@ test("real-world: comma and period differences", () => {
     diffTexts.some((t) => t.includes("thinking,") || t.includes("try.")),
     `Expected punctuation diffs in A, got diffs: ${JSON.stringify(diffTexts)}, all: ${JSON.stringify(segmentsA)}`
   );
+});
+
+test("real-world: capitalization differences", () => {
+  const a = "let me know when you have a chance to look at this no rush but i would appreciate your feedback";
+  const b = "Let me know when you have a chance to look at this No rush but I would appreciate your feedback";
+  const { segmentsA, segmentsB } = computeWordDiff(a, b);
+  const diffA = segmentsA.filter((s) => s.type === "diff").map((s) => s.text.trim());
+  const diffB = segmentsB.filter((s) => s.type === "diff").map((s) => s.text.trim());
+  assert(diffA.includes("let"), `A should diff 'let': ${JSON.stringify(diffA)}`);
+  assert(diffB.includes("Let"), `B should diff 'Let': ${JSON.stringify(diffB)}`);
+  assert(diffA.includes("no"), `A should diff 'no': ${JSON.stringify(diffA)}`);
+  assert(diffB.includes("No"), `B should diff 'No': ${JSON.stringify(diffB)}`);
 });
 
 test("real-world: subtle comma and period at end", () => {
