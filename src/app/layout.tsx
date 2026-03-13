@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/navbar";
@@ -33,8 +32,7 @@ export default function RootLayout({
           </Link>
           <span className="mx-2">·</span>
           Sponsored by{" "}
-          <a href="https://gladia.io" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 transition-colors duration-160 hover:underline" style={{ color: "var(--color-text-brand)" }}>
-            <Image src="/providers/gladia.svg" alt="" width={14} height={14} className="inline-block" style={{ verticalAlign: "middle" }} />
+          <a href="https://gladia.io" target="_blank" rel="noopener noreferrer" className="transition-colors duration-160 hover:underline" style={{ color: "var(--color-text-brand)" }}>
             Gladia
           </a>
         </footer>

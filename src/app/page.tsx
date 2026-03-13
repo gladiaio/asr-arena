@@ -173,11 +173,9 @@ export default function ArenaPage() {
               <span style={{ color: "var(--color-accent-purple)" }}>
                 is <RotatingWord />
               </span>
-              <br />
-              <span className="text-5xl md:text-7xl">You decide.</span>
             </h1>
             <p
-              className="mt-4 max-w-md text-base"
+              className="max-w-md text-base"
               style={{
                 color: "var(--color-text-secondary)",
                 lineHeight: 1.5,
