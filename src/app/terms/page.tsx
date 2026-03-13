@@ -75,11 +75,13 @@ export default function TermsPage() {
 
         <Section title="Votes & leaderboard">
           <p>
-            Votes are anonymous — we do not require an account or collect any
-            personal identifiers. A random session ID is stored in your
-            browser&apos;s local storage to group votes within a session. By
-            voting, you agree that your votes become the property of STT Arena and
-            may be used to compute and publish leaderboard rankings.
+            Votes are fully anonymous. We do not require an account, do not
+            collect IP addresses, and do not store any personal identifiers.
+            Sessions are identified by a randomly generated UUID stored in your
+            browser&apos;s local storage — this ID cannot be traced back to any
+            individual. By voting, you agree that your votes become the property
+            of STT Arena and may be used to compute and publish leaderboard
+            rankings.
           </p>
         </Section>
 
