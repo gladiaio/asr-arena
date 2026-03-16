@@ -1,4 +1,4 @@
-# Comper STT
+# Compare STT
 
 Blind comparison of speech-to-text providers. Record or upload audio, compare two anonymous transcriptions side by side, and vote for the best one. Community votes feed into an ELO-based leaderboard.
 

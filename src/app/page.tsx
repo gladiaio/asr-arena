@@ -54,13 +54,13 @@ export default function ArenaPage() {
   const [audioTime, setAudioTime] = useState(0);
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("comper-stt-session") : null;
+    const stored = typeof window !== "undefined" ? localStorage.getItem("compare-stt-session") : null;
     if (stored) {
       setSessionId(stored);
     } else {
       const id = crypto.randomUUID();
       setSessionId(id);
-      if (typeof window !== "undefined") localStorage.setItem("comper-stt-session", id);
+      if (typeof window !== "undefined") localStorage.setItem("compare-stt-session", id);
     }
   }, []);
 
@@ -157,7 +157,7 @@ export default function ArenaPage() {
     setShowSummary(false);
     const id = crypto.randomUUID();
     setSessionId(id);
-    localStorage.setItem("comper-stt-session", id);
+    localStorage.setItem("compare-stt-session", id);
     setVoteCount(0);
     setPhase("input");
     setResult(null);

@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: comper_stt
-      POSTGRES_PASSWORD: comper_stt_dev
-      POSTGRES_DB: comper_stt
+      POSTGRES_USER: compare_stt
+      POSTGRES_PASSWORD: compare_stt_dev
+      POSTGRES_DB: compare_stt
     ports:
       - "5432:5432"
     volumes:

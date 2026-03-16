@@ -17,7 +17,7 @@ export async function transcribeWithSpeechmatics(
 
   const start = Date.now();
 
-  const client = new BatchClient({ apiKey, appId: "comper-stt" });
+  const client = new BatchClient({ apiKey, appId: "compare-stt" });
 
   const ext = mimeType.includes("wav") ? "audio.wav"
     : mimeType.includes("mp3") || mimeType.includes("mpeg") ? "audio.mp3"
