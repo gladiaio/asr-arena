@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { del } from "@vercel/blob";
 import { prisma } from "@/lib/db";
 import { transcribeForProvider } from "@/lib/transcribe";
 import { signMatchToken } from "@/lib/match-token";
@@ -49,18 +50,25 @@ async function pickMatchup(providers: ProviderRecord[]) {
 }
 
 export async function POST(request: Request) {
+  let blobUrl: string | undefined;
+
   try {
-    const formData = await request.formData();
-    const sessionId = formData.get("sessionId") as string;
-    const audioFile = formData.get("audio") as File | null;
+    const body = await request.json();
+    const { sessionId, blobUrl: url, mimeType: clientMimeType } = body as {
+      sessionId?: string;
+      blobUrl?: string;
+      mimeType?: string;
+    };
 
     if (!sessionId) {
       return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
     }
 
-    if (!audioFile) {
-      return NextResponse.json({ error: "audio file is required" }, { status: 400 });
+    if (!url) {
+      return NextResponse.json({ error: "blobUrl is required" }, { status: 400 });
     }
+
+    blobUrl = url;
 
     let session = await prisma.session.findUnique({ where: { id: sessionId } });
     if (!session) {
@@ -74,8 +82,17 @@ export async function POST(request: Request) {
 
     const { providerA, providerB } = await pickMatchup(providers);
 
-    const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
-    const mimeType = audioFile.type || "audio/webm";
+    const audioRes = await fetch(blobUrl, {
+      headers: {
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+      },
+    });
+    if (!audioRes.ok) {
+      return NextResponse.json({ error: "Failed to fetch audio from blob" }, { status: 500 });
+    }
+
+    const audioBuffer = Buffer.from(await audioRes.arrayBuffer());
+    const mimeType = clientMimeType || audioRes.headers.get("content-type") || "audio/webm";
 
     const [resultA, resultB] = await Promise.all([
       transcribeForProvider(providerA.slug, audioBuffer, mimeType),
@@ -96,5 +113,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Transcribe error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } finally {
+    if (blobUrl) {
+      del(blobUrl).catch((err) => console.error("Blob cleanup failed:", err));
+    }
   }
 }

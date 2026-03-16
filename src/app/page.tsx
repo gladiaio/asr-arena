@@ -9,7 +9,7 @@ import type { WordTimestamp } from "@/components/transcript-card";
 import { VoteButtons } from "@/components/vote-buttons";
 import { SessionSummary } from "@/components/session-summary";
 import { computeWordDiff } from "@/lib/diff";
-import { blobToWav } from "@/lib/encode-wav";
+import { upload } from "@vercel/blob/client";
 
 type Phase = "input" | "transcribing" | "compare" | "voting" | "reveal";
 
@@ -75,18 +75,31 @@ export default function ArenaPage() {
       if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
 
       try {
-        const wav = await blobToWav(blob);
-        const url = URL.createObjectURL(wav);
-        audioUrlRef.current = url;
-        setAudioUrl(url);
+        const localUrl = URL.createObjectURL(blob);
+        audioUrlRef.current = localUrl;
+        setAudioUrl(localUrl);
 
-        const formData = new FormData();
-        formData.append("audio", wav, "audio.wav");
-        formData.append("sessionId", sessionId);
+        const ext = blob.type.includes("webm") ? "webm"
+          : blob.type.includes("mp4") ? "mp4"
+          : blob.type.includes("wav") ? "wav"
+          : blob.type.includes("mpeg") || blob.type.includes("mp3") ? "mp3"
+          : blob.type.includes("ogg") ? "ogg"
+          : blob.type.includes("flac") ? "flac"
+          : "audio";
+
+        const { url: blobUrl } = await upload(`arena/${sessionId}.${ext}`, blob, {
+          access: "private",
+          handleUploadUrl: "/api/upload",
+        });
 
         const res = await fetch("/api/transcribe", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId,
+            blobUrl,
+            mimeType: blob.type || "audio/webm",
+          }),
         });
 
         if (!res.ok) throw new Error("Transcription failed");
