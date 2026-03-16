@@ -24,7 +24,7 @@ export function Navbar() {
         >
           <Image src="/logo.svg" alt="" width={22} height={22} />
           <span className="text-base font-semibold tracking-tight">
-            STT Arena
+            Comper STT
           </span>
         </Link>
 

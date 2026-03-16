@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms & Privacy | STT Arena",
+  title: "Terms & Privacy | Comper STT",
 };
 
 export default function TermsPage() {
@@ -27,9 +27,9 @@ export default function TermsPage() {
       </p>
 
       <div className="flex flex-col gap-10">
-        <Section title="What is STT Arena?">
+        <Section title="What is Comper STT?">
           <p>
-            STT Arena is a free, non-commercial tool sponsored by{" "}
+            Comper STT is a free, non-commercial tool sponsored by{" "}
             <a href="https://gladia.io" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "var(--color-text-brand)" }}>
               Gladia
             </a>{" "}
@@ -46,14 +46,14 @@ export default function TermsPage() {
             When you submit audio, it is sent in real time to two randomly
             selected third-party speech-to-text providers for transcription.{" "}
             <strong>
-              STT Arena does not store your audio files or the resulting
+              Comper STT does not store your audio files or the resulting
               transcriptions.
             </strong>{" "}
             The only data we retain is the outcome of each comparison (which
             provider was selected as the winner, or whether it was a tie).
             However, once your audio is transmitted to a provider, it is
             processed under that provider&apos;s own terms and privacy policy.
-            STT Arena has no control over how third-party providers handle,
+            Comper STT has no control over how third-party providers handle,
             store, or process your audio data. Please review their terms:
           </p>
           <ul className="mt-3 flex flex-col gap-1.5 pl-4" style={{ listStyleType: "disc" }}>
@@ -80,16 +80,16 @@ export default function TermsPage() {
             Sessions are identified by a randomly generated UUID stored in your
             browser&apos;s local storage — this ID cannot be traced back to any
             individual. By voting, you agree that your votes become the property
-            of STT Arena and may be used to compute and publish leaderboard
+            of Comper STT and may be used to compute and publish leaderboard
             rankings.
           </p>
         </Section>
 
         <Section title="Cookies & local storage">
           <p>
-            STT Arena does not use cookies or third-party analytics. A single
+            Comper STT does not use cookies or third-party analytics. A single
             local storage entry
-            (<code className="text-xs" style={{ color: "var(--color-text-brand)" }}>stt-arena-session</code>)
+            (<code className="text-xs" style={{ color: "var(--color-text-brand)" }}>comper-stt-session</code>)
             holds your anonymous session ID. No tracking scripts are loaded.
           </p>
         </Section>
@@ -99,21 +99,21 @@ export default function TermsPage() {
             Provider names and logos displayed on this site (Deepgram, AssemblyAI,
             ElevenLabs, Speechmatics) are trademarks of their respective owners.
             Their use here is strictly for identification purposes in the context
-            of a comparative, non-commercial benchmark. STT Arena is not
+            of a comparative, non-commercial benchmark. Comper STT is not
             affiliated with, endorsed by, or sponsored by any of these companies.
           </p>
         </Section>
 
         <Section title="Disclaimer & limitation of liability">
           <p>
-            STT Arena is provided <strong>&ldquo;as is&rdquo; and &ldquo;as
+            Comper STT is provided <strong>&ldquo;as is&rdquo; and &ldquo;as
             available&rdquo;</strong> without warranty of any kind, express or
             implied, including but not limited to the warranties of
             merchantability, fitness for a particular purpose, and
             non-infringement.
           </p>
           <p className="mt-3">
-            STT Arena and its sponsors shall not be held liable for any direct, indirect, incidental,
+            Comper STT and its sponsors shall not be held liable for any direct, indirect, incidental,
             special, consequential, or exemplary damages arising from or related
             to the use of this service, including but not limited to: the
             processing of audio by third-party providers, the accuracy or
@@ -126,7 +126,7 @@ export default function TermsPage() {
             transcription quality. Use them at your own discretion.
           </p>
           <p className="mt-3">
-            By using STT Arena, you acknowledge and accept these terms in full.
+            By using Comper STT, you acknowledge and accept these terms in full.
           </p>
         </Section>
 

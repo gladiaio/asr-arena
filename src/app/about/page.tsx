@@ -3,8 +3,8 @@ import Image from "next/image";
 import { PROVIDERS } from "@/lib/providers";
 
 export const metadata: Metadata = {
-  title: "About | STT Arena",
-  description: "Why we built STT Arena — the blind speech-to-text benchmark.",
+  title: "About | Comper STT",
+  description: "Why we built Comper STT — the blind speech-to-text benchmark.",
 };
 
 export default function AboutPage() {
@@ -21,7 +21,7 @@ export default function AboutPage() {
         className="mb-6 text-3xl font-semibold tracking-tight md:text-4xl"
         style={{ color: "var(--color-text-primary)", letterSpacing: "-0.02em" }}
       >
-        Why STT Arena exists
+        Why Comper STT exists
       </h1>
 
       <div
@@ -37,7 +37,7 @@ export default function AboutPage() {
         </p>
 
         <p>
-          STT Arena was born from that frustration. Instead of trusting
+          Comper STT was born from that frustration. Instead of trusting
           self-reported numbers, we let <strong>you</strong> be the judge. Record
           your voice, upload a meeting snippet, throw in a podcast clip — whatever
           you want. Two providers transcribe it blindly, side by side, and you pick
@@ -171,7 +171,7 @@ export default function AboutPage() {
         </h2>
 
         <p>
-          STT Arena is a free, open, non-commercial project sponsored by{" "}
+          Comper STT is a free, open, non-commercial project sponsored by{" "}
           <a
             href="https://gladia.io"
             target="_blank"

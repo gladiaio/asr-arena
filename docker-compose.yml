@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: asr_arena
-      POSTGRES_PASSWORD: asr_arena_dev
-      POSTGRES_DB: asr_arena
+      POSTGRES_USER: comper_stt
+      POSTGRES_PASSWORD: comper_stt_dev
+      POSTGRES_DB: comper_stt
     ports:
       - "5432:5432"
     volumes:

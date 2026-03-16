@@ -10,7 +10,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "STT Arena | Blind Speech-to-Text Comparison",
+  title: "Comper STT | Blind Speech-to-Text Comparison",
   description:
     "Compare speech-to-text providers in blind tests. Record or upload audio, vote for the best transcription, and see how providers stack up on the leaderboard.",
   icons: { icon: "/logo.svg" },
