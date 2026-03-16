@@ -5,6 +5,49 @@ import { signMatchToken } from "@/lib/match-token";
 
 export const maxDuration = 120;
 
+interface ProviderRecord {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl: string;
+}
+
+async function pickMatchup(providers: ProviderRecord[]) {
+  const pairs: [ProviderRecord, ProviderRecord][] = [];
+  for (let i = 0; i < providers.length; i++) {
+    for (let j = i + 1; j < providers.length; j++) {
+      pairs.push([providers[i], providers[j]]);
+    }
+  }
+
+  const pairCounts = await prisma.vote.groupBy({
+    by: ["providerAId", "providerBId"],
+    _count: true,
+  });
+
+  const countMap = new Map<string, number>();
+  for (const row of pairCounts) {
+    const key = [row.providerAId, row.providerBId].sort().join(":");
+    countMap.set(key, (countMap.get(key) || 0) + row._count);
+  }
+
+  const minCount = Math.min(
+    ...pairs.map((p) => countMap.get([p[0].id, p[1].id].sort().join(":")) || 0)
+  );
+
+  const leastPlayed = pairs.filter(
+    (p) => (countMap.get([p[0].id, p[1].id].sort().join(":")) || 0) === minCount
+  );
+
+  const chosen = leastPlayed[Math.floor(Math.random() * leastPlayed.length)];
+  const swap = Math.random() < 0.5;
+
+  return {
+    providerA: swap ? chosen[1] : chosen[0],
+    providerB: swap ? chosen[0] : chosen[1],
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -29,11 +72,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not enough providers" }, { status: 500 });
     }
 
-    const idxA = Math.floor(Math.random() * providers.length);
-    let idxB = Math.floor(Math.random() * (providers.length - 1));
-    if (idxB >= idxA) idxB++;
-    const providerA = providers[idxA];
-    const providerB = providers[idxB];
+    const { providerA, providerB } = await pickMatchup(providers);
 
     const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
     const mimeType = audioFile.type || "audio/webm";

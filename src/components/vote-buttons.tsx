@@ -34,7 +34,7 @@ export function VoteButtons({ onVote, disabled, disableA, disableB, transcriptA,
             borderColor: "var(--color-accent-purple)",
           }}
         >
-          <EqualsIcon /> Both are good
+          <EqualsIcon /> It's a tie
         </button>
         <div className="flex items-center gap-4">
           <button
@@ -99,7 +99,7 @@ export function VoteButtons({ onVote, disabled, disableA, disableB, transcriptA,
           borderColor: "var(--color-border-secondary)",
         }}
       >
-        <EqualsIcon /> Both are good
+        <EqualsIcon /> It's a tie
       </button>
     </div>
   );

@@ -20,6 +20,12 @@ export function Navbar() {
       >
         <Link
           href="/"
+          onClick={(e) => {
+            if (pathname === "/") {
+              e.preventDefault();
+              window.dispatchEvent(new CustomEvent("arena:reset"));
+            }
+          }}
           className="mr-4 flex items-center gap-2 px-2 font-medium text-white"
         >
           <Image src="/logo.svg" alt="" width={22} height={22} />

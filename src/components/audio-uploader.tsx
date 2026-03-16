@@ -32,14 +32,26 @@ export function AudioUploader({ onFileSelected, disabled }: AudioUploaderProps) 
   const [error, setError] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dragCounterRef = useRef(0);
 
   const validateAndSubmit = useCallback(
     async (file: File) => {
       setError(null);
       setFileName(null);
 
-      if (!file.type.startsWith("audio/")) {
-        setError("Please upload an audio file (mp3, wav, m4a, webm, etc.)");
+      const ACCEPTED_TYPES = [
+        "audio/",
+        "video/mp4",
+        "video/webm",
+        "video/ogg",
+      ];
+      const ACCEPTED_EXTENSIONS = /\.(mp3|wav|m4a|aac|ogg|oga|opus|flac|wma|webm|mp4|caf|aiff|aif)$/i;
+
+      const typeOk = ACCEPTED_TYPES.some((t) => file.type.startsWith(t)) || file.type === "";
+      const extOk = ACCEPTED_EXTENSIONS.test(file.name);
+
+      if (!typeOk && !extOk) {
+        setError("Unsupported file format. Try mp3, wav, m4a, aac, mp4, ogg, flac, webm...");
         return;
       }
 
@@ -73,9 +85,30 @@ export function AudioUploader({ onFileSelected, disabled }: AudioUploaderProps) 
     [onFileSelected]
   );
 
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current += 1;
+    if (dragCounterRef.current === 1) setIsDragging(true);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current -= 1;
+    if (dragCounterRef.current === 0) setIsDragging(false);
+  }, []);
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
+      e.stopPropagation();
+      dragCounterRef.current = 0;
       setIsDragging(false);
       const file = e.dataTransfer.files[0];
       if (file) validateAndSubmit(file);
@@ -86,11 +119,9 @@ export function AudioUploader({ onFileSelected, disabled }: AudioUploaderProps) 
   return (
     <div className="w-full max-w-md">
       <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragging(true);
-        }}
-        onDragLeave={() => setIsDragging(false)}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => !disabled && !validating && inputRef.current?.click()}
         className="flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius-xl)] border-2 border-dashed p-8 transition-all duration-160"
@@ -111,7 +142,7 @@ export function AudioUploader({ onFileSelected, disabled }: AudioUploaderProps) 
             {validating ? "Checking audio…" : fileName || "Drop an audio file here"}
           </p>
           <p className="mt-1 text-xs" style={{ color: "var(--color-text-tertiary)" }}>
-            or click to browse (mp3, wav, m4a, webm — max 2 min)
+            or click to browse (mp3, wav, m4a, aac, mp4, flac… — max 2 min)
           </p>
         </div>
       </div>
@@ -125,7 +156,7 @@ export function AudioUploader({ onFileSelected, disabled }: AudioUploaderProps) 
       <input
         ref={inputRef}
         type="file"
-        accept="audio/*"
+        accept="audio/*,video/mp4,video/webm,video/ogg,.aac,.mp4,.m4a,.ogg,.flac,.opus,.wma,.caf,.aiff"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

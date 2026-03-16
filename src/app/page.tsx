@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { AudioRecorder } from "@/components/audio-recorder";
 import { AudioUploader } from "@/components/audio-uploader";
 import { AudioPlayer } from "@/components/audio-player";
@@ -142,6 +142,12 @@ export default function ArenaPage() {
     setAudioTime(0);
   }, []);
 
+  useEffect(() => {
+    const reset = () => handlePlayAgain();
+    window.addEventListener("arena:reset", reset);
+    return () => window.removeEventListener("arena:reset", reset);
+  }, [handlePlayAgain]);
+
   const handleEndSession = useCallback(async () => {
     try {
       const res = await fetch(`/api/session/${sessionId}/stats`);
@@ -238,14 +244,20 @@ export default function ArenaPage() {
       {/* Transcribing */}
       {phase === "transcribing" && (
         <div className="flex flex-1 flex-col items-center justify-center gap-8 w-full animate-fade-in">
-          <div className="flex flex-col items-center gap-2">
-            <div
-              className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: "var(--color-accent-purple)", borderTopColor: "transparent" }}
-            />
-            <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-              Transcribing with two providers...
-            </p>
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <div
+                className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+                style={{ borderColor: "var(--color-accent-purple)", borderTopColor: "transparent" }}
+              />
+              <p
+                className="text-xs font-medium uppercase tracking-widest"
+                style={{ color: "var(--color-text-tertiary)" }}
+              >
+                Transcribing…
+              </p>
+            </div>
+            <WaitingMessage active={phase === "transcribing"} />
           </div>
           <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
             <TranscriptCardSkeleton label="Model A" />
@@ -407,6 +419,65 @@ export default function ArenaPage() {
         <SessionSummary stats={sessionStats} onClose={handleCloseSummary} />
       )}
     </div>
+  );
+}
+
+const WAITING_MESSAGES = [
+  "The models are warming up their vocal cords... 🎤",
+  "Teaching AI to listen is harder than it sounds... 👂",
+  "Somewhere, a GPU is working very hard for you 🔥",
+  "Fun fact: humans mishear ~1 word in 4. Let's see if AI does better 🤔",
+  "Decoding audio waves into squiggly letters... ✨",
+  "The bits are being crunched. Aggressively. 💪",
+  "Almost there... probably... maybe... 🤞",
+  "If this were the 90s, you'd be waiting way longer ☎️",
+  "Plot twist: the audio was silence all along 🤫",
+  "Patience is a virtue. Also a requirement here. 🧘",
+];
+
+function WaitingMessage({ active }: { active: boolean }) {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const shuffled = useMemo(
+    () => [...WAITING_MESSAGES].sort(() => Math.random() - 0.5),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [active]
+  );
+
+  useEffect(() => {
+    if (!active) {
+      setMessageIndex(0);
+      setVisible(true);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setMessageIndex((prev) => (prev + 1) % shuffled.length);
+        setVisible(true);
+      }, 300);
+    }, 4000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [active, shuffled]);
+
+  return (
+    <p
+      className="text-center text-sm transition-all duration-300"
+      style={{
+        color: "var(--color-text-secondary)",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(6px)",
+      }}
+    >
+      {shuffled[messageIndex]}
+    </p>
   );
 }
 
