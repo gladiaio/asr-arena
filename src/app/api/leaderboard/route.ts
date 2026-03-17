@@ -38,11 +38,12 @@ export async function GET() {
       .sort((a, b) => b.rating - a.rating);
 
     const MIN_VOTES_FOR_SIGNIFICANCE = 100;
+    const forceShow = process.env.NEXT_PUBLIC_SHOW_LEADERBOARD === "true";
 
     return NextResponse.json({
       leaderboard,
       totalVotes: votes.length,
-      isSignificant: votes.length >= MIN_VOTES_FOR_SIGNIFICANCE,
+      isSignificant: forceShow || votes.length >= MIN_VOTES_FOR_SIGNIFICANCE,
     });
   } catch (error) {
     console.error("Leaderboard error:", error);
