@@ -6,10 +6,9 @@ import { LeaderboardTable } from "@/components/leaderboard-table";
 interface LeaderboardEntry {
   id: string;
   name: string;
-  slug: string;
   logoUrl: string;
   model: string;
-  rating: number;
+  eloRange: string;
   wins: number;
   losses: number;
   ties: number;

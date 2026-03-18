@@ -10,6 +10,11 @@ function getEloBucket(rating: number): number {
   return Math.floor(rating / ELO_BUCKET_SIZE) * ELO_BUCKET_SIZE;
 }
 
+function getEloRangeLabel(rating: number): string {
+  const min = getEloBucket(rating);
+  return `${min}–${min + ELO_BUCKET_SIZE}`;
+}
+
 export async function GET() {
   try {
     const providers = await prisma.provider.findMany();
@@ -35,6 +40,7 @@ export async function GET() {
           logoUrl: p.logoUrl,
           model: def?.model ?? "",
           rating: r.rating,
+          eloRange: getEloRangeLabel(r.rating),
           wins: r.wins,
           losses: r.losses,
           ties: r.ties,
@@ -49,7 +55,8 @@ export async function GET() {
         if (a.slug === GLADIA_SLUG) return -1;
         if (b.slug === GLADIA_SLUG) return 1;
         return a.name.localeCompare(b.name);
-      });
+      })
+      .map(({ slug: _slug, rating: _rating, ...rest }) => rest);
 
     const MIN_VOTES_FOR_SIGNIFICANCE = 100;
     const revealResults = process.env.NEXT_PUBLIC_SHOW_LEADERBOARD === "true";

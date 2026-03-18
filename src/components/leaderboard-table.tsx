@@ -5,10 +5,9 @@ import Image from "next/image";
 interface LeaderboardEntry {
   id: string;
   name: string;
-  slug: string;
   logoUrl: string;
   model: string;
-  rating: number;
+  eloRange: string;
   wins: number;
   losses: number;
   ties: number;
@@ -20,37 +19,6 @@ interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
   totalVotes: number;
   isSignificant: boolean;
-}
-
-const GLADIA_SLUG = "gladia";
-const ELO_BUCKET_SIZE = 50;
-
-function getEloBucket(rating: number): number {
-  return Math.floor(rating / ELO_BUCKET_SIZE) * ELO_BUCKET_SIZE;
-}
-
-function getEloRangeLabel(rating: number): string {
-  const min = getEloBucket(rating);
-  return `${min}–${min + ELO_BUCKET_SIZE}`;
-}
-
-function sortByEloRange(entries: LeaderboardEntry[]): LeaderboardEntry[] {
-  return [...entries].sort((a, b) => {
-    const bucketA = getEloBucket(a.rating);
-    const bucketB = getEloBucket(b.rating);
-    if (bucketA !== bucketB) return bucketB - bucketA;
-    if (a.slug === GLADIA_SLUG) return -1;
-    if (b.slug === GLADIA_SLUG) return 1;
-    return a.name.localeCompare(b.name);
-  });
-}
-
-function sortForEarlyStage(entries: LeaderboardEntry[]): LeaderboardEntry[] {
-  const gladia = entries.find((e) => e.slug === GLADIA_SLUG);
-  const rest = entries
-    .filter((e) => e.slug !== GLADIA_SLUG)
-    .sort((a, b) => a.name.localeCompare(b.name));
-  return gladia ? [gladia, ...rest] : rest;
 }
 
 export function LeaderboardTable({
@@ -81,7 +49,7 @@ export function LeaderboardTable({
     );
   }
 
-  const displayEntries = isSignificant ? sortByEloRange(entries) : sortForEarlyStage(entries);
+  const displayEntries = entries;
 
   return (
     <div className="flex flex-col gap-6">
@@ -145,7 +113,7 @@ export function LeaderboardTable({
                       className="font-mono text-sm font-semibold tabular-nums"
                       style={{ color: "var(--color-text-primary)" }}
                     >
-                      {getEloRangeLabel(entry.rating)}
+                      {entry.eloRange}
                     </span>
                   </BlurredValue>
                 </td>
