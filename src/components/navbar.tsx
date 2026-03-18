@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const showLeaderboard = process.env.NEXT_PUBLIC_SHOW_LEADERBOARD !== "false";
-
 export function Navbar() {
   const pathname = usePathname();
 
@@ -39,11 +37,9 @@ export function Navbar() {
         <NavLink href="/" active={pathname === "/"}>
           Arena
         </NavLink>
-        {showLeaderboard && (
-          <NavLink href="/leaderboard" active={pathname === "/leaderboard"}>
-            Leaderboard
-          </NavLink>
-        )}
+        <NavLink href="/leaderboard" active={pathname === "/leaderboard"}>
+          Leaderboard
+        </NavLink>
         <NavLink href="/about" active={pathname === "/about"}>
           About
         </NavLink>

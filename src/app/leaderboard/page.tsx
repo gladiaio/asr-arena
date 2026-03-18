@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
 import { LeaderboardTable } from "@/components/leaderboard-table";
-
-const showLeaderboard = process.env.NEXT_PUBLIC_SHOW_LEADERBOARD !== "false";
 
 interface LeaderboardEntry {
   id: string;
@@ -21,9 +18,6 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardPage() {
-  if (!showLeaderboard) {
-    redirect("/");
-  }
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [totalVotes, setTotalVotes] = useState(0);
   const [isSignificant, setIsSignificant] = useState(false);
