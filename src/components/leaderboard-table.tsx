@@ -23,6 +23,27 @@ interface LeaderboardTableProps {
 }
 
 const GLADIA_SLUG = "gladia";
+const ELO_BUCKET_SIZE = 50;
+
+function getEloBucket(rating: number): number {
+  return Math.floor(rating / ELO_BUCKET_SIZE) * ELO_BUCKET_SIZE;
+}
+
+function getEloRangeLabel(rating: number): string {
+  const min = getEloBucket(rating);
+  return `${min}–${min + ELO_BUCKET_SIZE}`;
+}
+
+function sortByEloRange(entries: LeaderboardEntry[]): LeaderboardEntry[] {
+  return [...entries].sort((a, b) => {
+    const bucketA = getEloBucket(a.rating);
+    const bucketB = getEloBucket(b.rating);
+    if (bucketA !== bucketB) return bucketB - bucketA;
+    if (a.slug === GLADIA_SLUG) return -1;
+    if (b.slug === GLADIA_SLUG) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
 
 function sortForEarlyStage(entries: LeaderboardEntry[]): LeaderboardEntry[] {
   const gladia = entries.find((e) => e.slug === GLADIA_SLUG);
@@ -60,7 +81,7 @@ export function LeaderboardTable({
     );
   }
 
-  const displayEntries = isSignificant ? entries : sortForEarlyStage(entries);
+  const displayEntries = isSignificant ? sortByEloRange(entries) : sortForEarlyStage(entries);
 
   return (
     <div className="flex flex-col gap-6">
@@ -76,9 +97,8 @@ export function LeaderboardTable({
                 color: "var(--color-text-tertiary)",
               }}
             >
-              <th className="pb-3 pr-4">#</th>
               <th className="pb-3 pr-4">Provider</th>
-              <th className="pb-3 pr-4 text-right">ELO</th>
+              <th className="pb-3 pr-4 text-right">ELO Range</th>
               <th className="hidden pb-3 pr-4 text-right sm:table-cell">Win Rate</th>
               <th className="hidden pb-3 pr-4 text-right md:table-cell">W</th>
               <th className="hidden pb-3 pr-4 text-right md:table-cell">L</th>
@@ -96,23 +116,6 @@ export function LeaderboardTable({
                   animationDelay: `${index * 60}ms`,
                 }}
               >
-                <td className="py-4 pr-4">
-                  <span
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold"
-                    style={{
-                      background:
-                        index === 0
-                          ? "var(--color-accent-purple)"
-                          : "var(--color-bg-tertiary)",
-                      color:
-                        index === 0
-                          ? "var(--color-text-inverse)"
-                          : "var(--color-text-secondary)",
-                    }}
-                  >
-                    {isSignificant ? index + 1 : "-"}
-                  </span>
-                </td>
                 <td className="py-4 pr-4">
                   <div className="flex items-center gap-3">
                     <div className="relative h-6 w-32 shrink-0">
@@ -142,7 +145,7 @@ export function LeaderboardTable({
                       className="font-mono text-sm font-semibold tabular-nums"
                       style={{ color: "var(--color-text-primary)" }}
                     >
-                      {entry.rating}
+                      {getEloRangeLabel(entry.rating)}
                     </span>
                   </BlurredValue>
                 </td>
@@ -236,9 +239,9 @@ function EarlyStageDisclaimer({ totalVotes }: { totalVotes: number }) {
           Not enough data yet
         </p>
         <p className="mt-1 text-sm" style={{ color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
-          Rankings are hidden until we collect enough votes for statistically significant
-          results. We currently have {totalVotes} vote{totalVotes !== 1 ? "s" : ""} — keep
-          comparing in the Arena to help us reach that threshold!
+          Rankings are hidden until enough votes are collected for statistically significant
+          results. Currently: {totalVotes} vote{totalVotes !== 1 ? "s" : ""}. Keep
+          comparing in the Arena to help reach that threshold!
         </p>
       </div>
     </div>

@@ -3,6 +3,13 @@ import { prisma } from "@/lib/db";
 import { computeEloRatings } from "@/lib/elo";
 import { getProviderBySlug } from "@/lib/providers";
 
+const ELO_BUCKET_SIZE = 50;
+const GLADIA_SLUG = "gladia";
+
+function getEloBucket(rating: number): number {
+  return Math.floor(rating / ELO_BUCKET_SIZE) * ELO_BUCKET_SIZE;
+}
+
 export async function GET() {
   try {
     const providers = await prisma.provider.findMany();
@@ -35,7 +42,14 @@ export async function GET() {
           winRate: r.winRate,
         };
       })
-      .sort((a, b) => b.rating - a.rating);
+      .sort((a, b) => {
+        const bucketA = getEloBucket(a.rating);
+        const bucketB = getEloBucket(b.rating);
+        if (bucketA !== bucketB) return bucketB - bucketA;
+        if (a.slug === GLADIA_SLUG) return -1;
+        if (b.slug === GLADIA_SLUG) return 1;
+        return a.name.localeCompare(b.name);
+      });
 
     const MIN_VOTES_FOR_SIGNIFICANCE = 100;
     const revealResults = process.env.NEXT_PUBLIC_SHOW_LEADERBOARD === "true";

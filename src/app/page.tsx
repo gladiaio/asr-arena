@@ -217,7 +217,7 @@ export default function ArenaPage() {
               Which transcription
               <br />
               <span style={{ color: "var(--color-accent-purple)" }}>
-                is <RotatingWord />
+                is the <RotatingWord />
               </span>
             </h1>
             <p
@@ -228,7 +228,7 @@ export default function ArenaPage() {
               }}
             >
               Record your voice or upload an audio file. We&apos;ll transcribe it with
-              two providers, and you pick the winner.
+              two providers. You pick the winner.
             </p>
           </div>
 

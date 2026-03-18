@@ -35,7 +35,7 @@ export function Navbar() {
         </Link>
 
         <NavLink href="/" active={pathname === "/"}>
-          Arena
+          Compare
         </NavLink>
         <NavLink href="/leaderboard" active={pathname === "/leaderboard"}>
           Leaderboard

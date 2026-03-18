@@ -4,7 +4,7 @@ import { PROVIDERS } from "@/lib/providers";
 
 export const metadata: Metadata = {
   title: "About | Compare STT",
-  description: "Why we built Compare STT — the blind speech-to-text benchmark.",
+  description: "Why we built Compare STT, the blind speech-to-text benchmark.",
 };
 
 export default function AboutPage() {
@@ -39,14 +39,14 @@ export default function AboutPage() {
         <p>
           Compare STT was born from that frustration. Instead of trusting
           self-reported numbers, we let <strong>you</strong> be the judge. Record
-          your voice, upload a meeting snippet, throw in a podcast clip — whatever
+          your voice, upload a meeting snippet, throw in a podcast clip, whatever
           you want. Two providers transcribe it blindly, side by side, and you pick
           the one that got it right. No names attached. No bias. Just text.
         </p>
 
         <p>
           Every vote feeds into an{" "}
-          <strong>ELO rating system</strong> — the same kind used to rank chess
+          <strong>ELO rating system</strong>, the same kind used to rank chess
           players. Over time, the leaderboard converges toward something no
           corporate benchmark can replicate: a ranking shaped by real people,
           real accents, real noise, and real conversations.
@@ -63,7 +63,7 @@ export default function AboutPage() {
             className="text-sm italic leading-relaxed"
             style={{ color: "var(--color-text-tertiary)" }}
           >
-            &ldquo;The best benchmark is the one you can&apos;t game — because
+            &ldquo;The best benchmark is the one you can&apos;t game, because
             you don&apos;t know what&apos;s coming next, and you don&apos;t know
             who you&apos;re up against.&rdquo;
           </p>
@@ -81,20 +81,20 @@ export default function AboutPage() {
           style={{ listStyleType: "decimal" }}
         >
           <li>
-            <strong>You submit audio</strong> — record live or upload a file
+            <strong>You submit audio</strong>, record live or upload a file
             (up to 2 minutes).
           </li>
           <li>
-            <strong>Two random providers transcribe it</strong> — their
+            <strong>Two random providers transcribe it</strong>, their
             identities are hidden. You see &ldquo;Model A&rdquo; vs
             &ldquo;Model B&rdquo;.
           </li>
           <li>
-            <strong>You vote</strong> — pick the better transcription, or call
+            <strong>You vote</strong>, pick the better transcription, or call
             it a tie. The providers are revealed after your vote.
           </li>
           <li>
-            <strong>ELO ratings update</strong> — every vote shifts the
+            <strong>ELO ratings update</strong>, every vote shifts the
             leaderboard. The more votes, the more accurate the ranking.
           </li>
         </ol>
@@ -153,7 +153,7 @@ export default function AboutPage() {
           style={{ listStyleType: "disc" }}
         >
           <li>We don&apos;t store your audio or transcriptions.</li>
-          <li>We don&apos;t track you — no cookies, no accounts, no IP logging.</li>
+          <li>We don&apos;t track you, no cookies, no accounts, no IP logging.</li>
           <li>We don&apos;t sell data. There is no data to sell.</li>
           <li>We don&apos;t take money from providers to rig the leaderboard.</li>
         </ul>
