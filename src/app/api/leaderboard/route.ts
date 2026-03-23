@@ -71,7 +71,7 @@ export async function GET() {
     return NextResponse.json({
       leaderboard,
       totalVotes: votes.length,
-      isSignificant: revealResults || votes.length >= MIN_VOTES_FOR_SIGNIFICANCE,
+      isSignificant: revealResults && votes.length >= MIN_VOTES_FOR_SIGNIFICANCE,
       useEloRange,
     });
   } catch (error) {
