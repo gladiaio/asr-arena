@@ -296,8 +296,8 @@ return \`\${payload}.\${signature}\`;
 
         <p>
           Ratings are computed from a single chronological pass over all votes.
-          The leaderboard displays either exact ELO scores or 50-point ELO
-          range buckets (e.g. &ldquo;1500&ndash;1550&rdquo;), depending on configuration.
+          The leaderboard displays exact ELO scores, sorted by descending
+          rating.
         </p>
 
         <CodeBlock title="src/lib/elo.ts — rating computation (simplified)">
@@ -327,16 +327,13 @@ for (const vote of votes) {
         </h2>
 
         <p>
-          Rankings are blurred until the total vote count exceeds a minimum
-          threshold (currently 100 votes). Below this threshold, provider order
-          is randomized to prevent premature conclusions from statistically
-          insignificant data.
+          Rankings are blurred until the results reach statistical significance.
+          While blurred, provider order is randomized to prevent premature
+          conclusions from insufficient data.
         </p>
 
         <p>
-          Once the threshold is reached, providers are sorted by ELO rating
-          (descending). When ELO range mode is active, providers within the same
-          50-point bucket are considered equivalent and sorted alphabetically.
+          Once revealed, providers are sorted by exact ELO rating (descending).
         </p>
 
         {/* ── 6. Anti-gaming ── */}
@@ -439,6 +436,31 @@ for (const vote of votes) {
           No audio recordings, no transcriptions, no IP addresses, no user
           accounts. The session ID is a random UUID generated client-side with
           no link to any user identity.
+        </p>
+
+        {/* ── 9. Sponsorship ── */}
+        <h2
+          className="mt-6 text-xl font-semibold tracking-tight"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          9. Sponsorship &amp; API costs
+        </h2>
+
+        <p>
+          None of the providers listed above have offered free API keys or
+          credits for this project. All API calls are paid for by{" "}
+          <a
+            href="https://gladia.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: "var(--color-text-brand)" }}
+          >
+            Gladia
+          </a>
+          , which sponsors the full cost of running every transcription across
+          every provider. We thank them for making this independent comparison
+          possible.
         </p>
 
         <div
