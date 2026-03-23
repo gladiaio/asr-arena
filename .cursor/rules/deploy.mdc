@@ -1,0 +1,15 @@
+---
+description: Deploy workflow - commit, lint, test, push
+alwaysApply: true
+---
+
+# Deploy
+
+When the user asks to deploy, ship, or push their changes:
+
+1. **Commit** -- Stage and commit changes (one or more commits, grouped logically). Follow the repo's commit style.
+2. **Lint** -- Run `npm run lint` and fix any errors before proceeding.
+3. **Test** -- Run `npm run test`. All tests must pass.
+4. **Push** -- Only if lint and tests pass, run `git push`.
+
+This is also available as `npm run deploy` (lint + test + push, but expects changes to already be committed).

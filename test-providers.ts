@@ -1,6 +1,8 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+
+dotenv.config({ path: ".env.local" });
 import { transcribeForProvider } from "./src/lib/transcribe";
 
 const SLUGS = ["gladia", "deepgram", "assemblyai", "elevenlabs", "speechmatics", "mistral"];

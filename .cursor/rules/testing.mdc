@@ -1,0 +1,11 @@
+---
+description: Testing conventions for provider tests and local scripts
+globs: test-*.ts
+alwaysApply: false
+---
+
+# Testing
+
+- Test scripts load env vars from `.env.local` directly via `dotenv.config({ path: ".env.local" })`. Never rely on `DOTENV_CONFIG_PATH` or `dotenv/config` bare import.
+- Run provider tests with `npm run test:providers`. Run all tests with `npm run test`.
+- Test audio files live in `test-audio/`.
