@@ -10,6 +10,8 @@ import { VoteButtons } from "@/components/vote-buttons";
 import { SessionSummary } from "@/components/session-summary";
 import { computeWordDiff } from "@/lib/diff";
 import { upload } from "@vercel/blob/client";
+import { incrementUploadCount } from "@/lib/upload-count";
+import { consumePendingAudio } from "@/lib/pending-audio";
 
 type Phase = "input" | "transcribing" | "compare" | "voting" | "reveal";
 
@@ -65,6 +67,7 @@ export default function ArenaPage() {
   }, []);
 
   const audioUrlRef = useRef<string | null>(null);
+  const pendingConsumed = useRef(false);
 
   const handleAudioSubmit = useCallback(
     async (blob: Blob) => {
@@ -107,6 +110,7 @@ export default function ArenaPage() {
         const data: TranscriptionResult = await res.json();
         setResult(data);
         setPhase("compare");
+        incrementUploadCount();
       } catch (err) {
         console.error(err);
         setPhase("input");
@@ -114,6 +118,15 @@ export default function ArenaPage() {
     },
     [sessionId]
   );
+
+  useEffect(() => {
+    if (!sessionId || pendingConsumed.current) return;
+    const blob = consumePendingAudio();
+    if (blob) {
+      pendingConsumed.current = true;
+      handleAudioSubmit(blob);
+    }
+  }, [sessionId, handleAudioSubmit]);
 
   const handleVote = useCallback(
     async (choice: "a" | "tie" | "b") => {
