@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: "Compare STT",
     images: [
       {
-        url: "https://cdn.prod.website-files.com/6458f30fed157c01444bd0b2/69c24023b37f422c8e4c22d4_Gladia_Website_Thumbnail_Compare-STT-providers.png",
+        url: "https://cdn.prod.website-files.com/6458f30fed157c01444bd0b2/69c24023b37f422c8e4c22d4_068ec19e06baf93c62157a2baef8d940_Gladia_Website_Thumbnail_Compare-STT-providers.png",
         width: 1200,
         height: 630,
         alt: "Compare STT — Blind Speech-to-Text Comparison",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     description:
       "Compare speech-to-text providers in blind tests. Record or upload audio, vote for the best transcription, and see how providers stack up on the leaderboard.",
     images: [
-      "https://cdn.prod.website-files.com/6458f30fed157c01444bd0b2/69c24023b37f422c8e4c22d4_Gladia_Website_Thumbnail_Compare-STT-providers.png",
+      "https://cdn.prod.website-files.com/6458f30fed157c01444bd0b2/69c24023b37f422c8e4c22d4_068ec19e06baf93c62157a2baef8d940_Gladia_Website_Thumbnail_Compare-STT-providers.png",
     ],
   },
 };
