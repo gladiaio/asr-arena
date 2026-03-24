@@ -37,9 +37,9 @@ export function Navbar() {
         <NavLink href="/" active={pathname === "/"}>
           Compare
         </NavLink>
-        <NavLink href="/leaderboard" active={pathname === "/leaderboard"}>
+        <DisabledNavLink tooltip="Available once we have enough results">
           Leaderboard
-        </NavLink>
+        </DisabledNavLink>
         <NavLink href="/methodology" active={pathname === "/methodology"}>
           Methodology
         </NavLink>
@@ -48,6 +48,24 @@ export function Navbar() {
         </NavLink>
       </nav>
     </header>
+  );
+}
+
+function DisabledNavLink({
+  tooltip,
+  children,
+}: {
+  tooltip: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      title={tooltip}
+      className="cursor-not-allowed rounded-[var(--radius-full)] px-4 py-2 text-sm opacity-40"
+      style={{ color: "var(--color-text-secondary)" }}
+    >
+      {children}
+    </span>
   );
 }
 
