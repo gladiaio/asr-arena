@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function Navbar() {
+export function Navbar({ showLeaderboard = false }: { showLeaderboard?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -37,9 +37,15 @@ export function Navbar() {
         <NavLink href="/" active={pathname === "/"}>
           Compare
         </NavLink>
-        <DisabledNavLink tooltip="Available once we have enough results">
-          Leaderboard
-        </DisabledNavLink>
+        {showLeaderboard ? (
+          <NavLink href="/leaderboard" active={pathname === "/leaderboard"}>
+            Leaderboard
+          </NavLink>
+        ) : (
+          <DisabledNavLink tooltip="Available once we have enough results">
+            Leaderboard
+          </DisabledNavLink>
+        )}
         <NavLink href="/methodology" active={pathname === "/methodology"}>
           Methodology
         </NavLink>
