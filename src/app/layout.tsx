@@ -49,7 +49,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const leaderboardEnabled = await showLeaderboard();
+  const leaderboardEnabled = Boolean(await showLeaderboard());
 
   return (
     <html lang="en" className="dark">
