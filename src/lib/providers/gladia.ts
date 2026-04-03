@@ -49,7 +49,11 @@ export async function transcribeWithGladia(
       "x-gladia-key": apiKey,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ audio_url }),
+    body: JSON.stringify({
+      audio_url,
+      punctuation_enhanced: true,
+      language_config: { code_switching: true },
+    }),
   });
 
   if (!transcribeRes.ok) {
